@@ -1,0 +1,1215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maurie Andino | Personal Website</title>
+    
+    <!-- Leaflet CSS for Map with Subresource Integrity -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+
+    <style>
+        /* Consulting Firm Aesthetic: Clean, sharp, minimalist */
+        :root {
+            --primary-bg: #ffffff;
+            --text-main: #111111;
+            --text-muted: #555555;
+            --accent-blue: #002b5c; 
+            --accent-green: #28a745;
+            --accent-maroon: #800000;
+            --line-color: #e0e0e0;
+            --hover-bg: #f9f9f9;
+            --max-width: 1200px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--primary-bg);
+            color: var(--text-main);
+            line-height: 1.6;
+        }
+
+        /* Header & Navigation Header */
+        header {
+            padding: 30px 5% 0 5%;
+            border-bottom: 1px solid var(--line-color);
+            background-color: var(--primary-bg);
+        }
+
+        .header-container {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .header-title-area {
+            padding-bottom: 15px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            margin: 0 0 5px 0;
+            color: var(--accent-blue);
+        }
+
+        .header-subtitle {
+            font-size: 0.9rem; 
+            color: var(--text-muted); 
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* Navigation Tabs */
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+        }
+
+        .tab-button {
+            background: none;
+            border: none;
+            padding: 12px 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .tab-button:hover {
+            color: var(--accent-blue);
+            background-color: var(--hover-bg);
+        }
+
+        .tab-button.active {
+            color: var(--accent-blue);
+            border-bottom-color: var(--accent-blue);
+        }
+
+        /* Main Content Container */
+        main {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding-bottom: 60px;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Consistent Section Layouts */
+        .page-section {
+            padding: 40px 5%;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            margin-top: 0;
+            margin-bottom: 30px;
+            font-weight: 600;
+            border-bottom: 2px solid var(--accent-blue);
+            display: inline-block;
+            padding-bottom: 5px;
+        }
+
+        .intro-text {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            font-weight: 300;
+            max-width: 900px;
+            line-height: 1.8;
+            margin: 0 0 30px 0;
+        }
+
+        /* Map Styling */
+        #map {
+            height: 480px;
+            width: 100%;
+            border: 1px solid var(--line-color);
+            border-radius: 6px;
+            z-index: 1; 
+        }
+
+        /* Map Legend */
+        .map-legend {
+            background-color: rgba(255, 255, 255, 0.92);
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid var(--line-color);
+            font-size: 0.8rem;
+            color: var(--text-main);
+            box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+
+        .legend-item + .legend-item {
+            margin-top: 4px;
+        }
+
+        .legend-dot {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        /* Site Watermark */
+        .site-watermark {
+            position: relative;
+            left: 0;
+            right: 0;
+            bottom: 60px;
+            text-align: center;
+            font-size: 1.0rem;
+            color: #cfcfcf;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        /* Interactive Grid Layout */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            align-items: stretch;
+        }
+
+        .grid-card {
+            background-color: var(--primary-bg);
+            border: 1px solid var(--line-color);
+            border-radius: 6px;
+            padding: 25px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            position: relative;
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        a.grid-card {
+            color: inherit;
+        }
+
+        .grid-card:hover {
+            border-color: var(--accent-blue);
+            box-shadow: 0 6px 12px rgba(0,43,92,0.1);
+            transform: translateY(-2px);
+        }
+
+        /* Image & Logo Containers */
+        .logo-container {
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+
+        .logo-container img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            filter: grayscale(0%);
+            transition: filter 0.3s ease;
+        }
+
+        .grid-card:hover .logo-container img,
+        .grid-card.active .logo-container img {
+            filter: grayscale(0%);
+        }
+
+        .image-container {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            margin-bottom: 15px;
+            min-height: 150px;
+        }
+
+        .cover-image {
+            max-width: 100%;
+            max-height: 150px; 
+            height: auto;      
+            object-fit: contain;
+            border-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        /* Typography Inside Cards */
+        .item-title {
+            font-size: 1.1rem;
+            color: var(--accent-blue);
+            margin: 0 0 5px 0;
+            font-weight: 700;
+        }
+
+        .item-subtitle {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin: 0 0 15px 0;
+            font-weight: 500;
+            margin-bottom: auto;
+        }
+
+        .item-desc {
+            font-size: 0.85rem;
+            color: var(--text-main);
+            margin: 0;
+            line-height: 1.5;
+            text-align: left;
+        }
+
+        .click-hint {
+            font-size: 0.75rem;
+            color: #aaaaaa;
+            margin-top: 15px;
+            display: block;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .grid-card.active .click-hint {
+            display: none;
+        }
+
+        /* Expandable Card Details */
+        .details-container {
+            display: none;
+            text-align: left;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--line-color);
+            animation: fadeIn 0.3s ease-in;
+            width: 100%;
+        }
+
+        .grid-card.active {
+            border-color: var(--accent-blue);
+            grid-row: span 2;
+        }
+
+        .grid-card.active .details-container {
+            display: block;
+        }
+
+        /* Center wrapper for purchase links */
+        .btn-center-wrapper {
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .purchase-btn {
+            display: inline-block;
+            padding: 8px 16px;
+            background-color: var(--primary-bg);
+            border: 1px solid var(--accent-blue);
+            color: var(--accent-blue);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.2s ease;
+        }
+
+        .purchase-btn:hover {
+            background-color: var(--accent-blue);
+            color: var(--primary-bg);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Intro Slides Overlay */
+        body.intro-active {
+            overflow: hidden;
+        }
+
+        #intro-overlay {
+            position: fixed;
+            inset: 0;
+            background-color: var(--primary-bg);
+            z-index: 9999;
+            cursor: pointer;
+            overflow: hidden;
+        }
+
+        #intro-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.6s ease;
+        }
+
+        /* Softly animated background: three large blurred fields in the site's
+           own accent colors (the same ones used for the map legend later on),
+           drifting slowly and continuously behind the text. */
+        .intro-bg {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .intro-blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(90px);
+            opacity: 0.16;
+            will-change: transform;
+        }
+
+        .intro-blob.blob-1 {
+            width: 46vw;
+            height: 46vw;
+            top: -14%;
+            left: -12%;
+            background: var(--accent-blue);
+            animation: blobFloat1 24s ease-in-out infinite alternate;
+        }
+
+        .intro-blob.blob-2 {
+            width: 40vw;
+            height: 40vw;
+            bottom: -16%;
+            right: -10%;
+            background: var(--accent-green);
+            animation: blobFloat2 29s ease-in-out infinite alternate;
+        }
+
+        .intro-blob.blob-3 {
+            width: 32vw;
+            height: 32vw;
+            top: 38%;
+            left: 58%;
+            background: var(--accent-maroon);
+            animation: blobFloat3 21s ease-in-out infinite alternate;
+        }
+
+        @keyframes blobFloat1 {
+            from { transform: translate(0, 0) scale(1); }
+            to   { transform: translate(6vw, 5vw) scale(1.12); }
+        }
+
+        @keyframes blobFloat2 {
+            from { transform: translate(0, 0) scale(1); }
+            to   { transform: translate(-5vw, -6vw) scale(1.08); }
+        }
+
+        @keyframes blobFloat3 {
+            from { transform: translate(0, 0) scale(1); }
+            to   { transform: translate(-4vw, 4vw) scale(1.15); }
+        }
+
+        .intro-slide {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 0 8%;
+            opacity: 0;
+            transform: scale(0.97);
+            transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+            pointer-events: none;
+        }
+
+        .intro-slide.active {
+            opacity: 1;
+            transform: scale(1);
+            pointer-events: auto;
+        }
+
+        .intro-slide-text {
+            margin: 0;
+            max-width: 700px;
+            color: var(--text-main);
+        }
+
+        .intro-slide[data-slide="1"] .intro-slide-text {
+            font-size: 3.5rem;
+            font-weight: 700;
+            letter-spacing: -1px;
+            color: var(--accent-blue);
+        }
+
+        .intro-slide[data-slide="2"] .intro-slide-text {
+            font-size: 3.5rem;
+            font-weight: 700;
+            letter-spacing: -1px;
+            color: var(--accent-blue);
+        }
+
+        .intro-slide[data-slide="3"] .intro-slide-text {
+            font-size: 3.5rem;
+            font-weight: 700;
+            letter-spacing: -1px;
+            max-width: 1100px;
+            color: var(--accent-blue);
+        }
+
+        /* Word-by-word reveal: each word starts hidden and rises into place;
+           the .active rule only starts matching once a slide is shown, so the
+           animation re-triggers fresh every time a new slide comes in. */
+        .intro-slide-text .word {
+            display: inline-block;
+            opacity: 0;
+            transform: translateY(22px);
+        }
+
+        .intro-slide.active .intro-slide-text .word {
+            animation: wordIn 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+            animation-delay: var(--word-delay, 0s);
+        }
+
+        @keyframes wordIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .intro-slide .click-hint {
+            position: absolute;
+            bottom: 40px;
+            left: 0;
+            right: 0;
+            margin-top: 0;
+            opacity: 0;
+        }
+
+        .intro-slide.active .click-hint {
+            animation: hintIn 0.6s ease forwards;
+            animation-delay: 1.05s;
+        }
+
+        @keyframes hintIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Progress dots */
+        .intro-progress {
+            position: absolute;
+            bottom: 88px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .intro-progress .dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--line-color);
+            transition: background-color 0.4s ease, transform 0.4s ease;
+        }
+
+        .intro-progress .dot.active {
+            background: var(--accent-blue);
+            transform: scale(1.3);
+        }
+
+        @media (max-width: 768px) {
+            .intro-slide[data-slide="1"] .intro-slide-text { font-size: 1.5rem; }
+            .intro-slide[data-slide="2"] .intro-slide-text { font-size: 1.5rem; }
+            .intro-slide[data-slide="3"] .intro-slide-text { font-size: 1.5rem; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .intro-blob { animation: none; }
+            .intro-slide-text .word { opacity: 1; transform: none; animation: none; }
+            .intro-slide.active .click-hint { animation: none; opacity: 1; }
+            .intro-slide { transition: opacity 0.4s ease; transform: none; }
+        }
+
+        /* Responsive Layout Adjustments */
+        @media (max-width: 1024px) {
+            .grid-container { grid-template-columns: repeat(3, 1fr); }
+        }
+        @media (max-width: 768px) {
+            .grid-container { grid-template-columns: repeat(2, 1fr); }
+            .header-container { flex-direction: column; align-items: flex-start; }
+            .nav-tabs { width: 100%; justify-content: flex-start; }
+        }
+        @media (max-width: 480px) {
+            .grid-container { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Intro Slides -->
+    <div id="intro-overlay">
+        <div class="intro-bg" aria-hidden="true">
+            <span class="intro-blob blob-1"></span>
+            <span class="intro-blob blob-2"></span>
+            <span class="intro-blob blob-3"></span>
+        </div>
+
+        <div class="intro-slide active" data-slide="1">
+            <p class="intro-slide-text">Hi. I'm Maurie.</p>
+            <span class="click-hint">Click anywhere to continue</span>
+        </div>
+        <div class="intro-slide" data-slide="2">
+            <p class="intro-slide-text">It's good to "meet" you!</p>
+            <span class="click-hint">Click anywhere to continue</span>
+        </div>
+        <div class="intro-slide" data-slide="3">
+            <p class="intro-slide-text">Whether you're family, a friend, or a professional connection, I hope you enjoy this digital intro!</p>
+            <span class="click-hint">Click to enter site</span>
+        </div>
+
+        <div class="intro-progress" aria-hidden="true">
+            <span class="dot active"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+        </div>
+    </div>
+
+    <header>
+        <div class="header-container">
+            <div class="header-title-area">
+                <h1>Maurie Andino</h1>
+                <div class="header-subtitle">About Me</div>
+            </div>
+            <nav class="nav-tabs">
+                <button class="tab-button active" onclick="switchTab('home', this)">Home</button>
+                <button class="tab-button" onclick="switchTab('resume', this)">Interactive Resume</button>
+                <button class="tab-button" onclick="switchTab('about', this)">Off The Shelf</button>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <!-- TAB 1: HOME -->
+        <div id="home-tab" class="tab-content active">
+            <!-- Adjusted bottom padding and margin to reduce the gap by 50% -->
+            <section class="page-section" style="padding-bottom: 0;">
+                <p class="intro-text" style="margin-bottom: 35px; max-width: none;">
+                    Welcome! My name is Maurie Andino and I am currently a full-time MBA student at the Booth School of Business. My goal here is for you to get to know me a little better in a format that is more fun than a .pdf file. Feel free to click around and thanks for stopping by!
+                </p>
+            </section>
+
+            <section class="page-section" style="padding-top: 0;">
+                <h2 class="section-title">Points of Interest</h2>
+                <div id="map"></div>
+            </section>
+        </div>
+
+        <!-- TAB 2: INTERACTIVE RESUME -->
+        <div id="resume-tab" class="tab-content">
+            <!-- WORK EXPERIENCE SECTION -->
+            <section class="page-section">
+                <h2 class="section-title">Work Experience</h2>
+                <div class="grid-container">
+                    
+                    <!-- PNC Bank -->
+                    <div class="grid-card" onclick="toggleCard(this)">
+                        <div class="logo-container">
+                            <img src="https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1b/PNClogo.svg/3840px-PNClogo.svg.png?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail" alt="PNC Bank Logo">
+                        </div>
+                        <span class="click-hint">Click to expand</span>
+                        <div class="details-container">
+                            <h3 class="item-title">Investment Banking Analyst</h3>
+                            <h4 class="item-subtitle">2024 - 2026</h4>
+                            <p class="item-desc">During my time at PNC Bank, I handled everything from early client pitches and RFPs to closing a $60 million <a href="https://www.pnc.com/insights/corporate-institutional/raise-capital/trade-receivables-securitization-a-lower-cost-source-of-revolving-debt.html" target="_blank" rel="noopener noreferrer">receivables securitization</a> over the course of three months. Working as the sole analyst across 13 deals, I regularly met with CFOs and treasurers to review monthly excel collateral reports, updated valuation models, and used Bloomberg to compare financing costs against traditional corporate debt.</p>
+                        </div>
+                    </div>
+
+                    <!-- KPMG -->
+                    <div class="grid-card" onclick="toggleCard(this)">
+                        <div class="logo-container">
+                            <img src="https://thumb.wikimedia.org/wikipedia/commons/thumb/d/db/KPMG_blue_logo.svg/1280px-KPMG_blue_logo.svg.png?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail" alt="KPMG Logo">
+                        </div>
+                        <span class="click-hint">Click to expand</span>
+                        <div class="details-container">
+                            <h3 class="item-title">Audit Intern</h3>
+                            <h4 class="item-subtitle">2023</h4>
+                            <p class="item-desc">During my time at KPMG, I evaluated and verified over $100 million in financial assets for asset management clients using mark-to-market, historical average, and discounted cash flow models. On the audit side, I managed all treasury and debt workpapers for a restaurant holding client and drafted four formal opinion letters to deliver financial statement audit results directly to management.</p>
+                        </div>
+                    </div>
+
+                    <!-- Amazon -->
+                    <div class="grid-card" onclick="toggleCard(this)">
+                        <div class="logo-container">
+                            <img src="https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a9/Amazon_logo.svg/960px-Amazon_logo.svg.png?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail" alt="Amazon Logo">
+                        </div>
+                        <span class="click-hint">Click to expand</span>
+                        <div class="details-container">
+                            <h3 class="item-title">Finance Intern</h3>
+                            <h4 class="item-subtitle">2022</h4>
+                            <p class="item-desc">At Amazon, I built a dashboard connecting Microsoft Excel and Hyperion Financial Management (HFM) to track accounting entries and monitor compliance with a corporate initiative to reduce post-closing adjustments. I also teamed up with software engineers to standardize the ticketing workflow for journal entry edits, driving a 40% reduction in repeat requests. Additionally, I verified all balance sheet items for the Investor Relations team to ensure complete accuracy ahead of the Q2 2022 earnings report.</p>
+                        </div>
+                    </div>
+
+                    <!-- AdventHealth -->
+                    <div class="grid-card" onclick="toggleCard(this)">
+                        <div class="logo-container">
+                            <img src="https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e7/AdventHealth_Logo.svg/3840px-AdventHealth_Logo.svg.png?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail" alt="AdventHealth Logo">
+                        </div>
+                        <span class="click-hint">Click to expand</span>
+                        <div class="details-container">
+                            <h3 class="item-title">Management Intern</h3>
+                            <h4 class="item-subtitle">2021</h4>
+                            <p class="item-desc">During my internship at AdventHealth, I rotated through the Physician Enterprise, Marketing, and Strategy departments, gaining a well-rounded view of the organization's healthcare operations. Along with interviewing company leadership and taking notes during executive meetings, I synthesized these insights to present on AdventHealth's vision for clinical excellence at the end-of-summer internship exposition.</p>
+                        </div>
+                    </div>
+
+                    <!-- Jewish Community Center -->
+                    <div class="grid-card" onclick="toggleCard(this)">
+                        <div class="logo-container">
+                            <img src="https://images.squarespace-cdn.com/content/v1/674e2381d7e68e3d378b4fee/c63efaea-ea1a-4f1d-b81f-7317af7406e7/Shalom-Orlando-Social-Share.png" alt="Jewish Community Center Logo">
+                        </div>
+                        <span class="click-hint">Click to expand</span>
+                        <div class="details-container">
+                            <h3 class="item-title">Lifeguard</h3>
+                            <h4 class="item-subtitle">2016 & 2018</h4>
+                            <p class="item-desc">As a lifeguard at the outdoor pool, I made sure the swimming environment was safe and executed one save.</p>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- EDUCATION SECTION -->
+            <section class="page-section" style="padding-top: 0;">
+                <h2 class="section-title">Education</h2>
+                <div class="grid-container">
+                    
+                    <!-- Chicago Booth -->
+                    <div class="grid-card" onclick="toggleCard(this)">
+                        <div class="logo-container">
+                            <img src="https://admitstudio.com/static/images/mba-school-horizontal-logos/uchicago-booth-logo.png" alt="Chicago Booth Logo">
+                        </div>
+                        <span class="click-hint">Click to expand</span>
+                        <div class="details-container">
+                            <h3 class="item-title">Full-Time MBA</h3>
+                            <h4 class="item-subtitle">2026 - 2028</h4>
+                            <p class="item-desc">As a full-time MBA at Chicago Booth, I plan on leveraging our esteemed faculty to hone my skills in finance and learn how to be a better leader. Regarding extra-curriculars, I am a member of <a href="https://groups.chicagobooth.edu/habsa/home-(draft_/" target="_blank" rel="noopener noreferrer">HABSA</a>, the Booth Coffee Club, and the <a href="https://groups.chicagobooth.edu/smith/home/" target="_blank" rel="noopener noreferrer">Adam Smith Society.</a></p>
+                        </div>
+                    </div>
+
+                    <!-- Union Adventist University -->
+                    <div class="grid-card" onclick="toggleCard(this)">
+                        <div class="logo-container">
+                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRqGXV7PLsj7HRshpUcCKuxuMIBvSSsrizb-hDeNhHwb48JW4e1xYjaGW8&s=10" alt="Union Adventist University Logo">
+                        </div>
+                        <span class="click-hint">Click to expand</span>
+                        <div class="details-container">
+                            <h3 class="item-title">B.S.B.A. - Accounting & Finance</h3>
+                            <h4 class="item-subtitle">2019 - 2024</h4>
+                            <p class="item-desc">While at Union Adventist University (previously Union College), I wrote multiple bills as part of student senate, worked as a TA in accounting, and was elected Student Association President. In 2024, I graduated with a 3.97 GPA in Accounting and Finance. In recognition of academic and professional achievements, I was also awarded Business Program Graduate of the Year by our business department.</p>
+                        </div>
+                    </div>
+
+                    <!-- Forest Lake Academy -->
+                    <div class="grid-card" onclick="toggleCard(this)">
+                        <div class="logo-container">
+                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRkmGK1P6gae2sMaxA7omyfOtGpmZnnuKJsvVNTwc2Lsjqx6P5VHhVJnh_q&s=10" alt="Forest Lake Academy Logo">
+                        </div>
+                        <span class="click-hint">Click to expand</span>
+                        <div class="details-container">
+                            <h3 class="item-title">Student</h3>
+                            <h4 class="item-subtitle">2015 - 2019</h4>
+                            <p class="item-desc">At Forest Lake Academy, I was highly involved on campus through sports, extracurriculars, and leadership activities. I played on the varsity soccer team, sang in our select choir which eventually performed at Carnegie Hall, and was elected Student Associate President my senior year. In May 2019 I graduated Forest Lake Academy summa cum laude.</p>
+                        </div>
+                    </div>
+
+                    <!-- Campus Adventista de Sagunto -->
+                    <div class="grid-card" onclick="toggleCard(this)">
+                        <div class="logo-container">
+                            <img src="https://campusadventista.es/wp-content/uploads/2020/05/campus-adventista-logo-x2.png" alt="Campus Adventista Logo">
+                        </div>
+                        <span class="click-hint">Click to expand</span>
+                        <div class="details-container">
+                            <h3 class="item-title">Estudiante</h3>
+                            <h4 class="item-subtitle">2003 - 2012</h4>
+                            <p class="item-desc">My father immigrated to the U.S. from Honduras at the age of 9. Insistent that my sister and I learn Spanish, he pulled us out of school in the U.S. and enrolled us in Campus Adventista de Sagunto. This happened three months every year since I was three. Thanks to this experience I speak fluent Spanish and have lifelong friends across the pond.</p>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- LICENSES & CERTIFICATIONS SECTION -->
+            <section class="page-section" style="padding-top: 0;">
+                <h2 class="section-title">Licenses & Certifications</h2>
+                <div class="grid-container">
+                    
+                    <!-- FINRA -->
+                    <div class="grid-card" onclick="toggleCard(this)">
+                        <div class="logo-container">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/95/FINRA_logo.svg/960px-FINRA_logo.svg.png?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail" alt="FINRA Logo">
+                        </div>
+                        <span class="click-hint">Click to expand</span>
+                        <div class="details-container">
+                            <h3 class="item-title">Series 7, 63, and 79 Licenses</h3>
+                        </div>
+                    </div>
+
+                    <!-- SIELE -->
+                    <div class="grid-card" onclick="toggleCard(this)">
+                        <div class="logo-container">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/8/83/Logo_SIELE%2C_Servicio_Internacional_de_Evaluaci%C3%B3n_de_la_Lengua_Espa%C3%B1ola.jpg?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=original" alt="SIELE Logo">
+                        </div>
+                        <span class="click-hint">Click to expand</span>
+                        <div class="details-container">
+                            <h3 class="item-title">C1 Level Spanish (Fluent)</h3>
+                        </div>
+                    </div>
+
+                    <!-- SDI -->
+                    <div class="grid-card" onclick="toggleCard(this)">
+                        <div class="logo-container">
+                            <img src="https://www.tdisdi.com/wp-content/uploads/2015/12/sdi_combo15.png" alt="SDI Logo">
+                        </div>
+                        <span class="click-hint">Click to expand</span>
+                        <div class="details-container">
+                            <h3 class="item-title">Open Water Scuba Certified</h3>
+                        </div>
+                    </div>
+
+                    <!-- Wall Street Prep -->
+                    <div class="grid-card" onclick="toggleCard(this)">
+                        <div class="logo-container">
+                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQVt9KbeF7Z8fIDcyfDFAgPhwdeHcFb_cQkSzh0ZnwlTc4qxF4opaoGHJo&s=10" alt="Wall Street Prep Logo">
+                        </div>
+                        <span class="click-hint">Click to expand</span>
+                        <div class="details-container">
+                            <h3 class="item-title">Financial Statement Analysis, DCF Modeling, and Private Credit</h3>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+        </div>
+
+        <!-- TAB 3: ABOUT ME -->
+        <div id="about-tab" class="tab-content">
+            <!-- PHYSICAL SECTION -->
+            <section id="physical" class="page-section">
+                <h2 class="section-title">Books</h2>
+                <p class="intro-text">A collection of books I've read, along with my personal thoughts and takeaways.</p>
+                
+                <div class="grid-container">
+                    <!-- Book Item 1 -->
+                    <div class="grid-card" onclick="toggleCard(this)">
+                        <div class="image-container">
+                            <img src="https://cdn.shopify.com/s/files/1/0674/5433/7265/files/9780231153683_p0.jpg?v=1765326620&width=400&height=606&crop=center" alt="The Most Important Thing" class="cover-image">
+                        </div>
+                        <h3 class="item-title">The Most Important Thing</h3>
+                        <p class="item-subtitle">Howard Marks</p>
+                        <span class="click-hint">Click to expand</span>
+                        
+                        <div class="details-container">
+                            <p class="item-desc">This is probably my favorite book and what set me on my path to study business. Howard Marks uses his experiences at Citi and Oaktree to explain the complex world of our capital markets in a way that can stick with the average reader.</p>
+                            <div class="btn-center-wrapper">
+                                <a href="https://www.barnesandnoble.com/w/the-most-important-thing-howard-marks/1029246829?ean=9780231153683" target="_blank" rel="noopener noreferrer" class="purchase-btn" onclick="event.stopPropagation()">Purchase Book</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Book Item 2 -->
+                    <div class="grid-card" onclick="toggleCard(this)">
+                        <div class="image-container">
+                            <img src="https://cdn.shopify.com/s/files/1/0674/5433/7265/files/9781668052631_p0.jpg?v=1782499612&width=1100&height=1676&crop=center" alt="Everything Is Predictable" class="cover-image">
+                        </div>
+                        <h3 class="item-title">Everything Is Predictable</h3>
+                        <p class="item-subtitle">Tom Chivers</p>
+                        <span class="click-hint">Click to expand</span>
+                        
+                        <div class="details-container">
+                            <p class="item-desc">As an accounting and finance major, this book does a good job of explaining Bayesian statistics and why it matters. After reading this, hopefully you will understand the difference between Bayesian and Frequentist statistics and why our digital world is favoring the former more and more.</p>
+                            <div class="btn-center-wrapper">
+                                <a href="https://www.barnesandnoble.com/w/everything-is-predictable-tom-chivers/1144226840?ean=9781668052631" target="_blank" rel="noopener noreferrer" class="purchase-btn" onclick="event.stopPropagation()">Purchase Book</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Book Item 3 -->
+                    <div class="grid-card" onclick="toggleCard(this)">
+                        <div class="image-container">
+                            <img src="https://cdn.shopify.com/s/files/1/0674/5433/7265/files/9780691166261_p0.jpg?v=1765160307&width=1100&height=1662&crop=center" alt="Irrational Exuberance" class="cover-image">
+                        </div>
+                        <h3 class="item-title">Irrational Exuberance</h3>
+                        <p class="item-subtitle">Robert J. Shiller</p>
+                        <span class="click-hint">Click to expand</span>
+                        
+                        <div class="details-container">
+                            <p class="item-desc">As I read more and more books on economics, I found that Irrational Exuberance was one of the most frequently quoted pieces in financial literature. In the source document, Robert Shiller challenges the efficient market hypothesis and uses the Shiller P/E ratio to illustrate that asset prices do not always reflect business reality.</p>
+                            <div class="btn-center-wrapper">
+                                <a href="https://www.barnesandnoble.com/w/irrational-exuberance-robert-j-shiller/1117219724?ean=9780691166261" target="_blank" rel="noopener noreferrer" class="purchase-btn" onclick="event.stopPropagation()">Purchase Book</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Book Item 4 -->
+                    <div class="grid-card" onclick="toggleCard(this)">
+                        <div class="image-container">
+                            <img src="https://cdn.shopify.com/s/files/1/0674/5433/7265/files/9780385512466_p0.jpg?v=1764980981&width=900&height=1351&crop=center" alt="Leadership Is An Art" class="cover-image">
+                        </div>
+                        <h3 class="item-title">Leadership Is An Art</h3>
+                        <p class="item-subtitle">Max De Pree</p>
+                        <span class="click-hint">Click to expand</span>
+                        
+                        <div class="details-container">
+                            <p class="item-desc">This book was given to me by an executive at AdventHealth during a one-on-one meeting back in highschool. The book is very well written and advocates for the idea of servant leadership. It also gives background on Herman Miller, the maker of the famous Eames chair.</p>
+                            <div class="btn-center-wrapper">
+                                <a href="https://www.barnesandnoble.com/w/leadership-is-an-art-max-de-pree/1100024955?ean=9780385512466" target="_blank" rel="noopener noreferrer" class="purchase-btn" onclick="event.stopPropagation()">Purchase Book</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Book Item 5 -->
+                    <div class="grid-card" onclick="toggleCard(this)">
+                        <div class="image-container">
+                            <img src="https://cdn.shopify.com/s/files/1/0674/5433/7265/files/9781785789229_p0.jpg?v=1765249847&width=600&height=922&crop=center" alt="Nuclear Fusion" class="cover-image">
+                        </div>
+                        <h3 class="item-title">Nuclear Fusion</h3>
+                        <p class="item-subtitle">Sharon Ann Holgate</p>
+                        <span class="click-hint">Click to expand</span>
+                        
+                        <div class="details-container">
+                            <p class="item-desc">After watching Oppenheimer, by Christopher Nolan. I became intersted in all things nuclear. This book gives good background on how nuclear technologies have developed through the years, the two leading methods for achieving fusion (tokomaks and stellarators), and how the complexity of the technology frequently pushes projects far off schedule and way over budget.</p>
+                            <div class="btn-center-wrapper">
+                                <a href="https://www.barnesandnoble.com/w/nuclear-fusion-sharon-ann-holgate/1141400733?ean=9781785789229" target="_blank" rel="noopener noreferrer" class="purchase-btn" onclick="event.stopPropagation()">Purchase Book</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Book Item 6 -->
+                    <div class="grid-card" onclick="toggleCard(this)">
+                        <div class="image-container">
+                            <img src="https://cdn.shopify.com/s/files/1/0674/5433/7265/files/9780593296967_p0.jpg?v=1766601970&width=1100&height=1662&crop=center" alt="1929" class="cover-image">
+                        </div>
+                        <h3 class="item-title">1929</h3>
+                        <p class="item-subtitle">Andrew Ross Sorkin</p>
+                        <span class="click-hint">Click to expand</span>
+                        
+                        <div class="details-container">
+                            <p class="item-desc">This is a popular one so I won't say much about it. 1929 was a great read for those interested in American history or how the individuals at the top of our financial institutions have the power to change our economic fates.</p>
+                            <div class="btn-center-wrapper">
+                                <a href="https://www.barnesandnoble.com/w/1929-andrew-ross-sorkin/1147761884?ean=9780593296967" target="_blank" rel="noopener noreferrer" class="purchase-btn" onclick="event.stopPropagation()">Purchase Book</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Book Item 7 -->
+                    <div class="grid-card" onclick="toggleCard(this)">
+                        <div class="image-container">
+                            <img src="https://cdn.shopify.com/s/files/1/0674/5433/7265/files/9781119594826_p0.jpg?v=1765145729&width=500&height=752&crop=center" alt="Venture Deals" class="cover-image">
+                        </div>
+                        <h3 class="item-title">Venture Deals</h3>
+                        <p class="item-subtitle">Brad Feld</p>
+                        <span class="click-hint">Click to expand</span>
+                        
+                        <div class="details-container">
+                            <p class="item-desc">Venture Deals is a MUST READ for anyone intersted in starting their own company, raising venture capital, or investing as a VC. The book is slightly technical, but that's what makes it so good. You learn about the items on a term-sheet, what parties are involved in a fundraise, and how every subsequent round effects each shareholder.</p>
+                            <div class="btn-center-wrapper">
+                                <a href="https://www.barnesandnoble.com/w/venture-deals-brad-feld/1103778194?ean=9781119594826" target="_blank" rel="noopener noreferrer" class="purchase-btn" onclick="event.stopPropagation()">Purchase Book</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Book Item 8 -->
+                    <div class="grid-card" onclick="toggleCard(this)">
+                        <div class="image-container">
+                            <img src="https://cdn.shopify.com/s/files/1/0674/5433/7265/files/9781632865687_p0.jpg?v=1764894859&width=1100&height=1650&crop=center" alt="The Grid" class="cover-image">
+                        </div>
+                        <h3 class="item-title">The Grid</h3>
+                        <p class="item-subtitle">Gretchen Bakke</p>
+                        <span class="click-hint">Click to expand</span>
+                        
+                        <div class="details-container">
+                            <p class="item-desc">This book pushes for increased investment in the U.S.'s grid given the average age of major generation plants and transmission lines. That said, this book was writted before the A.I. boom and ongoing investments in electric infrastructure. I'd like to read an updated version of this book when available.</p>
+                            <div class="btn-center-wrapper">
+                                <a href="https://www.barnesandnoble.com/w/the-grid-gretchen-bakke/1123299508?ean=9781632865687" target="_blank" rel="noopener noreferrer" class="purchase-btn" onclick="event.stopPropagation()">Purchase Book</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- DIGITAL SECTION -->
+            <section id="digital" class="page-section" style="padding-top: 0;">
+                <h2 class="section-title">Articles</h2>
+                <p class="intro-text">A few articles that caught my attention recently.</p>
+                
+                <div class="grid-container">
+                    <!-- Article Item 1 -->
+                    <a href="https://openai.com/index/navier-stokes-solution/" target="_blank" rel="noopener noreferrer" class="grid-card">
+                        <div class="image-container">
+                            <img src="https://images.ctfassets.net/kftzwdyauwt9/38fsDDtQmNLBW3F74od13W/7f0213895c06edc97709dc82d7905bc3/navier-stokes-dark-master.png?w=3840&q=80&fm=webp" alt="Article Thumbnail" class="cover-image">
+                        </div>
+                        <h3 class="item-title">On the Navier-Stokes Millenium Prize Problem</h3>
+                        <p class="item-subtitle">Published by OpenAI</p>
+                        <span class="click-hint">Opens in new tab ↗</span>
+                    </a>
+
+                    <!-- Article Item 2 -->
+                    <a href="https://www.oaktreecapital.com/insights/memo/whats-going-on-in-private-credit" target="_blank" rel="noopener noreferrer" class="grid-card">
+                        <div class="image-container">
+                            <img src="https://www.oaktreecapital.com/images/oaktreecaplibraries/insights/memos/hm-memos_written-image-1_530x299px.png?sfvrsn=50697366_3" alt="Article Thumbnail" class="cover-image">
+                        </div>
+                        <h3 class="item-title">What's Going on in Private Credit?</h3>
+                        <p class="item-subtitle">Memos from Howard Marks</p>
+                        <span class="click-hint">Opens in new tab ↗</span>
+                    </a>
+
+                    <!-- Article Item 3 -->
+                    <a href="https://www.chicagobooth.edu/review/jargon-can-boost-performance" target="_blank" rel="noopener noreferrer" class="grid-card">
+                        <div class="image-container">
+                            <img src="https://www.chicagobooth.edu/-/media/project/chicago-booth/chicago-booth-review/2026/september/chicago-booth-speech-bubble-table.jpg?cx=0.5&cy=0.53&cw=940&ch=749&hash=7161A0CDF43E4ED0B4D01C70929A8318" alt="Article Thumbnail" class="cover-image">
+                        </div>
+                        <h3 class="item-title">Jargon Can Boost Performance</h3>
+                        <p class="item-subtitle">Chicago Booth Review</p>
+                        <span class="click-hint">Opens in new tab ↗</span>
+                    </a>
+
+                    <!-- Article Item 4 -->
+                    <a href="https://gfmag.com/economics-policy-regulation/europe-long-bond-market-faces-dutch-pension-shock/" target="_blank" rel="noopener noreferrer" class="grid-card">
+                        <div class="image-container">
+                            <img src="https://s44650.pcdn.co/wp-content/uploads/2026/08/shutterstock_2700658795-scaled.jpg" alt="Article Thumbnail" class="cover-image">
+                        </div>
+                        <h3 class="item-title">Dutch Pension Shock</h3>
+                        <p class="item-subtitle">Global Finance Magazine</p>
+                        <span class="click-hint">Opens in new tab ↗</span>
+                    </a>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Watermark: fixed to the bottom of the viewport so it shows on every tab -->
+    <div class="site-watermark">Andino Inc. &copy; 2026</div>
+
+    <!-- Leaflet JS for Map with Subresource Integrity -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    
+    <script>
+        /* TAB SWITCHING LOGIC */
+        let map;
+        let mapMarkers = [];
+
+        function switchTab(tabName, clickedBtn) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Deactivate all tab buttons
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Show selected tab content and activate corresponding button
+            document.getElementById(tabName + '-tab').classList.add('active');
+            if (clickedBtn) {
+                clickedBtn.classList.add('active');
+            }
+
+            // Close any open map location descriptions whenever the user moves to a new page
+            mapMarkers.forEach(marker => marker.closePopup());
+
+            // Recalculate Leaflet map dimensions if user switches back to Home
+            if (tabName === 'home' && map) {
+                setTimeout(() => map.invalidateSize(), 100);
+            }
+        }
+
+        /* CARD EXPANSION LOGIC */
+        function toggleCard(element) {
+            const isActive = element.classList.contains('active');
+            if (isActive) {
+                element.classList.remove('active');
+            } else {
+                element.classList.add('active');
+            }
+        }
+
+        /* INTRO SLIDES LOGIC */
+        document.addEventListener('DOMContentLoaded', () => {
+            const introOverlay = document.getElementById('intro-overlay');
+            const introSlides = introOverlay.querySelectorAll('.intro-slide');
+            const progressDots = introOverlay.querySelectorAll('.intro-progress .dot');
+            let currentSlideIndex = 0;
+
+            document.body.classList.add('intro-active');
+
+            // Wrap each word of every slide's text in its own span so CSS can
+            // animate them in with a staggered delay, without changing the
+            // visible text itself. Delay is capped so longer sentences (like
+            // slide 3) don't drag the reveal out too long.
+            const WORD_DELAY_STEP = 0.2; // seconds between each word's start (~moderate reading pace)
+
+            introSlides.forEach(slide => {
+                const textEl = slide.querySelector('.intro-slide-text');
+                if (!textEl) return;
+                const words = textEl.textContent.trim().split(/\s+/);
+                textEl.textContent = '';
+                words.forEach((word, i) => {
+                    const span = document.createElement('span');
+                    span.className = 'word';
+                    span.textContent = word;
+                    const delay = i * WORD_DELAY_STEP;
+                    span.style.setProperty('--word-delay', `${delay.toFixed(3)}s`);
+                    textEl.appendChild(span);
+                    // Preserve the original spacing between words
+                    if (i < words.length - 1) {
+                        textEl.appendChild(document.createTextNode(' '));
+                    }
+                });
+            });
+
+            function updateProgress(index) {
+                progressDots.forEach((dot, i) => {
+                    dot.classList.toggle('active', i === index);
+                });
+            }
+
+            introOverlay.addEventListener('click', () => {
+                if (currentSlideIndex < introSlides.length - 1) {
+                    introSlides[currentSlideIndex].classList.remove('active');
+                    currentSlideIndex++;
+                    introSlides[currentSlideIndex].classList.add('active');
+                    updateProgress(currentSlideIndex);
+                } else {
+                    introOverlay.classList.add('hidden');
+                    document.body.classList.remove('intro-active');
+                    introOverlay.addEventListener('transitionend', () => {
+                        introOverlay.remove();
+                    }, { once: true });
+                }
+            });
+        });
+
+        /* MAP INITIALIZATION */
+        document.addEventListener('DOMContentLoaded', () => {
+            map = L.map('map').fitBounds([
+                [25.0, -125.0], // Southwest bound (US)
+                [45.0, 5.0]     // Northeast bound (Spain/France border)
+            ]);
+
+            // Removed explicit API key from the map URL
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png?key=cb1_32s3_1_bb990bfb3ae491f9aede7ad8', {
+                attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
+                subdomains: 'abcd',
+                maxZoom: 20
+            }).addTo(map);
+
+            const locations = [
+                { name: "Winter Park, Florida", desc: "Hometown", lat: 28.59, lng: -81.33 },
+                { name: "Valencia, Spain", desc: "Primary & Secondary Studies @ Campus Adventista de Sagunto", lat: 39.28, lng: -0.22},
+                { name: "Altamonte Springs, Florida", desc: "Internship @ AdventHealth", lat: 28.64, lng: -81.41},
+                { name: "Orlando, Florida", desc: "Internship @ KPMG", lat: 28.54, lng: -81.38},
+                { name: "Lincoln, Nebraska", desc: "Undergraduate Studies @ Union College", lat: 40.82, lng: -96.68 },
+                { name: "Seattle, Washington", desc: "Internship @ Amazon", lat: 47.60, lng: -122.33 },
+                { name: "Philadelphia, Pennsylvania", desc: "Full-Time Job @ PNC Bank", lat: 39.95, lng: -75.16 },
+                { name: "Chicago, Illinois", desc: "Graduate Studies @ Chicago Booth", lat: 41.87, lng: -87.62 }
+            ];
+
+            // "Fun Spots!" locations - maroon markers.
+            const funLocations = [
+                { name: "New York, New York", desc: "Sang with Choir @ Carnegie Hall", lat: 40.77, lng: -73.98 },
+                { name: "Annapolis, Maryland", desc: "Accepted as a Summer Midshipmen @ U.S. Naval Academy", lat: 38.98, lng: -76.49 },
+                { name: "Sagunto, Spain", desc: "Ran With the Bulls", lat: 39.68, lng: -0.28 },
+                { name: "Jupiter, Florida", desc: "Cage-less Shark Dive", lat: 26.93, lng: -80.10 }
+            ];
+
+            // Adds a set of locations to the map as circle markers whose description
+            // populates on click (and stays open until clicked again or the page changes).
+            function addLocationMarkers(locArray, getColor) {
+                locArray.forEach(loc => {
+                    const markerColor = getColor(loc);
+
+                    const marker = L.circleMarker([loc.lat, loc.lng], {
+                        color: markerColor,
+                        fillColor: markerColor,
+                        fillOpacity: 0.8,
+                        radius: 6
+                    }).addTo(map);
+
+                    marker.bindPopup(`<strong>${loc.name}</strong><br>${loc.desc}`, {
+                        closeButton: false,
+                        autoClose: false,
+                        closeOnClick: false
+                    });
+
+                    // Replace Leaflet's default "click opens popup" behavior with a toggle,
+                    // so clicking an already-open marker closes its description again.
+                    marker.off('click');
+                    marker.on('click', () => {
+                        if (marker.isPopupOpen()) {
+                            marker.closePopup();
+                        } else {
+                            marker.openPopup();
+                        }
+                    });
+
+                    mapMarkers.push(marker);
+                });
+            }
+
+            addLocationMarkers(locations, loc =>
+                loc.name === "Chicago, Illinois" ? 'var(--accent-green)' : 'var(--accent-blue)'
+            );
+            addLocationMarkers(funLocations, () => 'var(--accent-maroon)');
+
+            // Map Legend
+            const legend = L.control({ position: 'bottomleft' });
+            legend.onAdd = function () {
+                const div = L.DomUtil.create('div', 'map-legend');
+                div.innerHTML = `
+                    <div class="legend-item"><span class="legend-dot" style="background: var(--accent-green);"></span>Present</div>
+                    <div class="legend-item"><span class="legend-dot" style="background: var(--accent-blue);"></span>Education &amp; Career</div>
+                    <div class="legend-item"><span class="legend-dot" style="background: var(--accent-maroon);"></span>Fun Spots!</div>
+                `;
+                return div;
+            };
+            legend.addTo(map);
+        });
+    </script>
+</body>
+</html>
