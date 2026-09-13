@@ -71,6 +71,23 @@
             text-transform: uppercase;
         }
 
+        .header-location {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background-color: var(--accent-green);
+            border-radius: 50%;
+        }
+
         /* Navigation Tabs */
         .nav-tabs {
             display: flex;
@@ -139,6 +156,42 @@
             max-width: 900px;
             line-height: 1.8;
             margin: 0 0 30px 0;
+        }
+
+        /* Key Stats Section */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            margin: 20px 0 40px 0;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 10px 15px;
+            border-right: 1px solid var(--line-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        .stat-item:last-child {
+            border-right: none;
+        }
+
+        .stat-number {
+            font-size: 2.3rem;
+            font-weight: 700;
+            color: var(--accent-blue);
+            line-height: 1.1;
+            margin-bottom: 12px;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.35;
+            max-width: 170px;
         }
 
         /* Map Styling */
@@ -374,9 +427,6 @@
             transition: opacity 0.6s ease;
         }
 
-        /* Softly animated background: three large blurred fields in the site's
-           own accent colors (the same ones used for the map legend later on),
-           drifting slowly and continuously behind the text. */
         .intro-bg {
             position: absolute;
             inset: 0;
@@ -463,13 +513,7 @@
             color: var(--text-main);
         }
 
-        .intro-slide[data-slide="1"] .intro-slide-text {
-            font-size: 3.5rem;
-            font-weight: 700;
-            letter-spacing: -1px;
-            color: var(--accent-blue);
-        }
-
+        .intro-slide[data-slide="1"] .intro-slide-text,
         .intro-slide[data-slide="2"] .intro-slide-text {
             font-size: 3.5rem;
             font-weight: 700;
@@ -485,9 +529,6 @@
             color: var(--accent-blue);
         }
 
-        /* Word-by-word reveal: each word starts hidden and rises into place;
-           the .active rule only starts matching once a slide is shown, so the
-           animation re-triggers fresh every time a new slide comes in. */
         .intro-slide-text .word {
             display: inline-block;
             opacity: 0;
@@ -525,7 +566,6 @@
             to   { opacity: 1; transform: translateY(0); }
         }
 
-        /* Progress dots */
         .intro-progress {
             position: absolute;
             bottom: 88px;
@@ -551,10 +591,24 @@
             transform: scale(1.3);
         }
 
+        /* Responsive Layout Adjustments */
+        @media (max-width: 1024px) {
+            .grid-container { grid-template-columns: repeat(3, 1fr); }
+        }
         @media (max-width: 768px) {
-            .intro-slide[data-slide="1"] .intro-slide-text { font-size: 1.5rem; }
-            .intro-slide[data-slide="2"] .intro-slide-text { font-size: 1.5rem; }
+            .grid-container { grid-template-columns: repeat(2, 1fr); }
+            .stats-container { grid-template-columns: repeat(2, 1fr); gap: 20px 0; }
+            .stat-item { border-right: none; border-bottom: 1px solid var(--line-color); padding-bottom: 20px; }
+            .stat-item:last-child { border-bottom: none; }
+            .header-container { flex-direction: column; align-items: flex-start; }
+            .nav-tabs { width: 100%; justify-content: flex-start; }
+            .intro-slide[data-slide="1"] .intro-slide-text,
+            .intro-slide[data-slide="2"] .intro-slide-text,
             .intro-slide[data-slide="3"] .intro-slide-text { font-size: 1.5rem; }
+        }
+        @media (max-width: 480px) {
+            .grid-container { grid-template-columns: 1fr; }
+            .stats-container { grid-template-columns: 1fr; }
         }
 
         @media (prefers-reduced-motion: reduce) {
@@ -562,19 +616,6 @@
             .intro-slide-text .word { opacity: 1; transform: none; animation: none; }
             .intro-slide.active .click-hint { animation: none; opacity: 1; }
             .intro-slide { transition: opacity 0.4s ease; transform: none; }
-        }
-
-        /* Responsive Layout Adjustments */
-        @media (max-width: 1024px) {
-            .grid-container { grid-template-columns: repeat(3, 1fr); }
-        }
-        @media (max-width: 768px) {
-            .grid-container { grid-template-columns: repeat(2, 1fr); }
-            .header-container { flex-direction: column; align-items: flex-start; }
-            .nav-tabs { width: 100%; justify-content: flex-start; }
-        }
-        @media (max-width: 480px) {
-            .grid-container { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -613,6 +654,9 @@
             <div class="header-title-area">
                 <h1>Maurie Andino</h1>
                 <div class="header-subtitle">About Me</div>
+                <div class="header-location">
+                    <span class="status-dot"></span>Chicago, IL &middot; <span id="chicago-time">10:00 AM</span> local time
+                </div>
             </div>
             <nav class="nav-tabs">
                 <button class="tab-button active" onclick="switchTab('home', this)">Home</button>
@@ -625,11 +669,37 @@
     <main>
         <!-- TAB 1: HOME -->
         <div id="home-tab" class="tab-content active">
-            <!-- Adjusted bottom padding and margin to reduce the gap by 50% -->
             <section class="page-section" style="padding-bottom: 0;">
                 <p class="intro-text" style="margin-bottom: 35px; max-width: none;">
-                    Welcome! My name is Maurie Andino and I am currently a full-time MBA student at the Booth School of Business. My goal here is for you to get to know me a little better in a format that is more fun than a .pdf file. Feel free to click around and thanks for stopping by!
+                    Welcome! My name is Maurie Andino and I am currently a full-time MBA student at the Booth School of Business. Before Booth, I worked in asset-backed finance executing deals with public and private upper middle market clients. While my resume outlines my credentials, this space is designed to give you a more interactive look at who I am personally and professionally. Feel free to click around and thanks for stopping by! 
                 </p>
+            </section>
+
+            <!-- KEY STATS SECTION -->
+            <section class="page-section" style="padding-top: 5px; padding-bottom: 5px;">
+                <h2 class="section-title">Key Stats</h2>
+                <div class="stats-container">
+                    <div class="stat-item">
+                        <div class="stat-number">$100M+</div>
+                        <div class="stat-label">Structured Finance Deal Value Executed</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">3.97</div>
+                        <div class="stat-label">Undergraduate GPA in Accounting and Finance</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">2</div>
+                        <div class="stat-label">Languages Spoken Fluently</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">4 / 4</div>
+                        <div class="stat-label">Return Offers / Internships</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">47 / 50</div>
+                        <div class="stat-label">U.S. States Visited</div>
+                    </div>
+                </div>
             </section>
 
             <section class="page-section" style="padding-top: 0;">
@@ -727,7 +797,7 @@
                         <div class="details-container">
                             <h3 class="item-title">Full-Time MBA</h3>
                             <h4 class="item-subtitle">2026 - 2028</h4>
-                            <p class="item-desc">As a full-time MBA at Chicago Booth, I plan on leveraging our esteemed faculty to hone my skills in finance and learn how to be a better leader. Regarding extra-curriculars, I am a member of <a href="https://groups.chicagobooth.edu/habsa/home-(draft_/" target="_blank" rel="noopener noreferrer">HABSA</a>, the Booth Coffee Club, and the <a href="https://groups.chicagobooth.edu/smith/home/" target="_blank" rel="noopener noreferrer">Adam Smith Society.</a></p>
+                            <p class="item-desc">As a full-time MBA at <a href="https://www.chicagobooth.edu/" target="_blank" rel="noopener noreferrer">Chicago Booth</a>, I am leveraging our esteemed faculty to hone my skills in finance and learn how to be a better leader. Regarding extra-curriculars, I am a member of <a href="https://groups.chicagobooth.edu/habsa/home-(draft_/" target="_blank" rel="noopener noreferrer">HABSA</a>, the Booth Coffee Club, and the <a href="https://groups.chicagobooth.edu/smith/home/" target="_blank" rel="noopener noreferrer">Adam Smith Society.</a></p>
                         </div>
                     </div>
 
@@ -740,7 +810,7 @@
                         <div class="details-container">
                             <h3 class="item-title">B.S.B.A. - Accounting & Finance</h3>
                             <h4 class="item-subtitle">2019 - 2024</h4>
-                            <p class="item-desc">While at Union Adventist University (previously Union College), I wrote multiple bills as part of student senate, worked as a TA in accounting, and was elected Student Association President. In 2024, I graduated with a 3.97 GPA in Accounting and Finance. In recognition of academic and professional achievements, I was also awarded Business Program Graduate of the Year by our business department.</p>
+                            <p class="item-desc">While at <a href="https://uau.edu/" target="_blank" rel="noopener noreferrer">Union Adventist University</a> (previously Union College), I wrote multiple bills as part of student senate, worked as a TA in accounting, and was elected Student Association President. In 2024, I graduated with a 3.97 GPA in Accounting and Finance. In recognition of academic and professional achievements, I was also awarded Business Program Graduate of the Year by our business department.</p>
                         </div>
                     </div>
 
@@ -753,7 +823,7 @@
                         <div class="details-container">
                             <h3 class="item-title">Student</h3>
                             <h4 class="item-subtitle">2015 - 2019</h4>
-                            <p class="item-desc">At Forest Lake Academy, I was highly involved on campus through sports, extracurriculars, and leadership activities. I played on the varsity soccer team, sang in our select choir which eventually performed at Carnegie Hall, and was elected Student Associate President my senior year. In May 2019 I graduated Forest Lake Academy summa cum laude.</p>
+                            <p class="item-desc">At <a href="https://www.forestlakeacademy.org/" target="_blank" rel="noopener noreferrer">Forest Lake Academy</a>, I was highly involved on campus through sports, extracurriculars, and leadership activities. I played on the varsity soccer team, sang in our select choir which eventually performed at Carnegie Hall, and was elected Student Associate President my senior year. In May 2019 I graduated Forest Lake Academy summa cum laude.</p>
                         </div>
                     </div>
 
@@ -766,7 +836,7 @@
                         <div class="details-container">
                             <h3 class="item-title">Estudiante</h3>
                             <h4 class="item-subtitle">2003 - 2012</h4>
-                            <p class="item-desc">My father immigrated to the U.S. from Honduras at the age of 9. Insistent that my sister and I learn Spanish, he pulled us out of school in the U.S. and enrolled us in Campus Adventista de Sagunto. This happened three months every year since I was three. Thanks to this experience I speak fluent Spanish and have lifelong friends across the pond.</p>
+                            <p class="item-desc">My father immigrated to the U.S. from Honduras at the age of 9. Insistent that my sister and I learn Spanish, he pulled us out of school in the U.S. and enrolled us in <a href="https://campusadventista.es/" target="_blank" rel="noopener noreferrer">Campus Adventista de Sagunto</a>. This happened three months every year since I was three. Thanks to this experience I speak fluent Spanish and have lifelong friends across the pond.</p>
                         </div>
                     </div>
 
@@ -1029,31 +1099,42 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     
     <script>
+        /* CHICAGO LOCAL TIME LOGIC */
+        function updateChicagoTime() {
+            const timeElement = document.getElementById('chicago-time');
+            if (timeElement) {
+                const options = {
+                    timeZone: 'America/Chicago',
+                    hour: 'numeric',
+                    minute: '2-digit',
+                    hour12: true
+                };
+                timeElement.textContent = new Intl.DateTimeFormat('en-US', options).format(new Date());
+            }
+        }
+        updateChicagoTime();
+        setInterval(updateChicagoTime, 10000);
+
         /* TAB SWITCHING LOGIC */
         let map;
         let mapMarkers = [];
 
         function switchTab(tabName, clickedBtn) {
-            // Hide all tab contents
             document.querySelectorAll('.tab-content').forEach(tab => {
                 tab.classList.remove('active');
             });
 
-            // Deactivate all tab buttons
             document.querySelectorAll('.tab-button').forEach(btn => {
                 btn.classList.remove('active');
             });
 
-            // Show selected tab content and activate corresponding button
             document.getElementById(tabName + '-tab').classList.add('active');
             if (clickedBtn) {
                 clickedBtn.classList.add('active');
             }
 
-            // Close any open map location descriptions whenever the user moves to a new page
             mapMarkers.forEach(marker => marker.closePopup());
 
-            // Recalculate Leaflet map dimensions if user switches back to Home
             if (tabName === 'home' && map) {
                 setTimeout(() => map.invalidateSize(), 100);
             }
@@ -1078,11 +1159,7 @@
 
             document.body.classList.add('intro-active');
 
-            // Wrap each word of every slide's text in its own span so CSS can
-            // animate them in with a staggered delay, without changing the
-            // visible text itself. Delay is capped so longer sentences (like
-            // slide 3) don't drag the reveal out too long.
-            const WORD_DELAY_STEP = 0.2; // seconds between each word's start (~moderate reading pace)
+            const WORD_DELAY_STEP = 0.2;
 
             introSlides.forEach(slide => {
                 const textEl = slide.querySelector('.intro-slide-text');
@@ -1096,7 +1173,6 @@
                     const delay = i * WORD_DELAY_STEP;
                     span.style.setProperty('--word-delay', `${delay.toFixed(3)}s`);
                     textEl.appendChild(span);
-                    // Preserve the original spacing between words
                     if (i < words.length - 1) {
                         textEl.appendChild(document.createTextNode(' '));
                     }
@@ -1128,11 +1204,10 @@
         /* MAP INITIALIZATION */
         document.addEventListener('DOMContentLoaded', () => {
             map = L.map('map').fitBounds([
-                [25.0, -125.0], // Southwest bound (US)
-                [45.0, 5.0]     // Northeast bound (Spain/France border)
+                [25.0, -125.0],
+                [45.0, 5.0]
             ]);
 
-            // Removed explicit API key from the map URL
             L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png?key=cb1_32s3_1_bb990bfb3ae491f9aede7ad8', {
                 attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
                 subdomains: 'abcd',
@@ -1150,7 +1225,6 @@
                 { name: "Chicago, Illinois", desc: "Graduate Studies @ Chicago Booth", lat: 41.87, lng: -87.62 }
             ];
 
-            // "Fun Spots!" locations - maroon markers.
             const funLocations = [
                 { name: "New York, New York", desc: "Sang with Choir @ Carnegie Hall", lat: 40.77, lng: -73.98 },
                 { name: "Annapolis, Maryland", desc: "Accepted as a Summer Midshipmen @ U.S. Naval Academy", lat: 38.98, lng: -76.49 },
@@ -1158,8 +1232,6 @@
                 { name: "Jupiter, Florida", desc: "Cage-less Shark Dive", lat: 26.93, lng: -80.10 }
             ];
 
-            // Adds a set of locations to the map as circle markers whose description
-            // populates on click (and stays open until clicked again or the page changes).
             function addLocationMarkers(locArray, getColor) {
                 locArray.forEach(loc => {
                     const markerColor = getColor(loc);
@@ -1177,8 +1249,6 @@
                         closeOnClick: false
                     });
 
-                    // Replace Leaflet's default "click opens popup" behavior with a toggle,
-                    // so clicking an already-open marker closes its description again.
                     marker.off('click');
                     marker.on('click', () => {
                         if (marker.isPopupOpen()) {
@@ -1197,7 +1267,6 @@
             );
             addLocationMarkers(funLocations, () => 'var(--accent-maroon)');
 
-            // Map Legend
             const legend = L.control({ position: 'bottomleft' });
             legend.onAdd = function () {
                 const div = L.DomUtil.create('div', 'map-legend');
